@@ -121,20 +121,32 @@ Do not add machinery unless the problem proves it needs machinery.
 
 ## Activation
 
-Use this skill whenever the task involves:
+Use this skill only when there is a concrete engineering task.
 
-* writing new code;
-* changing existing code;
-* reviewing a diff or PR;
-* debugging;
-* refactoring;
-* adding tests;
-* designing architecture;
-* evaluating AI-generated code;
-* reducing code bloat;
-* improving Cursor/agent rules;
-* hardening security or correctness;
-* preparing merge-ready changes.
+A concrete task includes at least one of:
+
+* a bug symptom or reproduction path;
+* a requested code change;
+* a pasted diff;
+* a specific file, function, PR, branch, or repo area to inspect;
+* a test, build, lint, or validation request;
+* an explicit review or audit target.
+
+Bare activation is not a task.
+
+If the user only says to enable, activate, use, or apply this skill/mode, do not inspect repositories, run commands, check branches, read files, audit diffs, or summarize repo status.
+
+For bare activation, respond only with a compact acknowledgement such as:
+
+```text
+Anti-bloat mode active. I will apply it to concrete coding, review, debugging, refactor, and validation tasks. I will not inspect repos or change files until you give a specific target.
+```
+
+Then stop.
+
+Do not proactively examine the whole repository.
+
+Do not run `git status`, compare branches, list files, search the repo, or inspect project structure unless the user's concrete task requires it.
 
 For trivial edits, apply the principles silently and keep the response brief.
 
@@ -163,26 +175,36 @@ Then identify the risk level:
 
 For high-risk work, require stronger verification and narrower changes.
 
-### Phase 1: Read context before editing
+### Phase 1: Read only task-relevant context
 
-Before writing code, inspect the relevant context.
+Before writing code, inspect only the smallest context needed for the concrete task.
 
-Look for:
+Start from the user-provided target:
 
-* existing implementations;
-* conventions in nearby code;
-* tests for similar behavior;
-* public interfaces;
-* validation boundaries;
-* error handling style;
-* dependency patterns;
-* naming style;
-* domain invariants;
-* hidden coupling;
-* generated files;
-* build/test commands.
+* pasted diff;
+* named file;
+* named function;
+* failing test;
+* error message;
+* route/component/module;
+* PR or branch explicitly requested for review.
 
-Do not invent architecture when the repository already has one.
+Read outward only when necessary to understand behavior or verify the change.
+
+Allowed context expansion:
+
+* nearby code in the same file;
+* directly imported or called functions;
+* existing tests for the same behavior;
+* public interfaces affected by the change;
+* configuration only if the task touches configuration;
+* build/test commands only if needed for verification.
+
+Do not scan the whole repository by default.
+
+Do not inspect unrelated packages, folders, generated files, dependency manifests, CI files, or branch status unless the task specifically requires them.
+
+If the task lacks a target and cannot proceed safely, ask one concise blocking question instead of exploring the repo.
 
 ### Phase 2: State assumptions and success criteria
 
@@ -598,7 +620,8 @@ Do not:
 * add broad catch blocks that hide real failures;
 * introduce global state unless necessary;
 * create configuration without a current user;
-* preserve AI-generated bloat out of politeness.
+* preserve AI-generated bloat out of politeness;
+* treat skill activation as permission to inspect repositories, branches, diffs, or files without a concrete task.
 
 ## Completion Checklist
 
